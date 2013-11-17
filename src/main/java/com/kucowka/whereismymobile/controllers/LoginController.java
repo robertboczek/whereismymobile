@@ -3,10 +3,13 @@ package com.kucowka.whereismymobile.controllers;
 import java.util.Arrays;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -24,28 +27,35 @@ public class LoginController {
 
 	private static final Logger logger = Logger
 			.getLogger(LoginController.class);
-	
+
 	@Autowired
 	private DynamoDbClientProvider dbClientProvider;
 
+	private static final String errorMessage = "errorMessage";
+
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
-	public String loginPage(Login login, Model model) {
+	public String loginPage(Login login, BindingResult result, Model model) {
 		model.asMap().put("login", login);
 		return "login";
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public String doLogin(Login login, Model model) {
+	public String doLogin(@Valid Login login, BindingResult result, Model model) {
 		logger.info("DEVICE ID: " + login.getDeviceId());
 
-		Credentials credentials = getCredentials(login.getDeviceId());
-		if (credentials != null) {
-			if (credentials.getPassword() != null
-					&& credentials.getPassword().equals(login.getPassword())) {
-				return "redirect:welcome";
+		if (!result.hasErrors()) {
+			Credentials credentials = getCredentials(login.getDeviceId());
+			if (credentials != null) {
+				if (credentials.getPassword() != null
+						&& credentials.getPassword()
+								.equals(login.getPassword())) {
+					return "redirect:welcome";
+				}
 			}
+			model.asMap().put(errorMessage, "Device Id or password was invalid");
+		} else {
+			model.asMap().put(errorMessage , "Please fix the errors and retry!");
 		}
-
 		model.asMap().put("login", login);
 		return "login";
 	}
@@ -56,10 +66,8 @@ public class LoginController {
 			Key key = new Key();
 			key.setHashKeyElement(new AttributeValue().withS(id));
 			GetItemRequest getItemRequest = new GetItemRequest()
-					.withTableName("Devices")
-					.withKey(key)
-					.withAttributesToGet(
-							Arrays.asList("Id", "Password"));
+					.withTableName("Devices").withKey(key)
+					.withAttributesToGet(Arrays.asList("Id", "Password"));
 
 			GetItemResult result = dbClientProvider.getClient().getItem(
 					getItemRequest);

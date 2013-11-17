@@ -24,7 +24,12 @@
 	
 	<mvc:annotation-driven />
 	<mvc:resources mapping="/resources/bootstrap/**" location="/bootstrap/" cache-period="10000"/>
-	<mvc:resources mapping="/resources/css/**" location="/css/" cache-period="10000"/>
+	<mvc:resources mapping="/resources/css/**" location="/css/" cache-period="0"/>
 	<mvc:resources mapping="/resources/js/**" location="/js/" cache-period="10000" />
+	<mvc:resources mapping="/resources/images/**" location="/images/" cache-period="10000" />
+	
+	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+    	<property name="basename" value="messages"/>
+	</bean>
  
 </beans>

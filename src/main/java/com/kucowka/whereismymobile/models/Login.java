@@ -1,8 +1,22 @@
 package com.kucowka.whereismymobile.models;
 
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.Length;
+
+import com.kucowka.whereismymobile.validation.annotations.RequiredPasswordFormat;
+
 public class Login {
 
-	private String deviceId, password;
+	@NotNull
+	@Length(min=8)
+	private String deviceId;
+	
+	@NotNull
+	@Length(min=8)
+	@RequiredPasswordFormat
+	private String password;
+	
 	private boolean rememberMe;
 
 	public String getDeviceId() {
