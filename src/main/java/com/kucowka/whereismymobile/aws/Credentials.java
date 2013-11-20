@@ -1,6 +1,8 @@
 package com.kucowka.whereismymobile.aws;
 
-public class Credentials {
+import java.io.Serializable;
+
+public class Credentials implements Serializable {
 
 	private String id, password;
 

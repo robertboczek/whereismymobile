@@ -44,5 +44,18 @@
 		class="org.springframework.context.support.ResourceBundleMessageSource">
 		<property name="basename" value="messages" />
 	</bean>
+	
+	 <bean id="memcached.client" class="net.spy.memcached.spring.MemcachedClientFactoryBean">
+        <property name="servers" value="localhost:11211" />
+        <property name="protocol" value="BINARY" />
+        <property name="transcoder">
+            <bean class="net.spy.memcached.transcoders.SerializingTranscoder" />
+        </property>
+        <property name="locatorType" value="ARRAY_MOD" />
+        <property name="opTimeout" value="2000" />
+        <property name="failureMode" value="Cancel" />
+        <property name="useNagleAlgorithm" value="false" />
+        <property name="timeoutExceptionThreshold" value="20" />
+    </bean>
 
 </beans>

@@ -5,8 +5,11 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
+import net.spy.memcached.MemcachedClient;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -31,6 +34,10 @@ public class LoginController {
 	@Autowired
 	private DynamoDbClientProvider dbClientProvider;
 
+	@Qualifier("memcached.client")
+	@Autowired()
+	private MemcachedClient memcached;
+
 	private static final String errorMessage = "errorMessage";
 
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
@@ -52,9 +59,10 @@ public class LoginController {
 					return "redirect:welcome";
 				}
 			}
-			model.asMap().put(errorMessage, "Device Id or password was invalid");
+			model.asMap()
+					.put(errorMessage, "Device Id or password was invalid");
 		} else {
-			model.asMap().put(errorMessage , "Please fix the errors and retry!");
+			model.asMap().put(errorMessage, "Please fix the errors and retry!");
 		}
 		model.asMap().put("login", login);
 		return "login";
@@ -62,27 +70,43 @@ public class LoginController {
 
 	private Credentials getCredentials(String id) {
 		Credentials credentials = null;
-		try {
-			Key key = new Key();
-			key.setHashKeyElement(new AttributeValue().withS(id));
-			GetItemRequest getItemRequest = new GetItemRequest()
-					.withTableName("Devices").withKey(key)
-					.withAttributesToGet(Arrays.asList("Id", "Password"));
 
-			GetItemResult result = dbClientProvider.getClient().getItem(
-					getItemRequest);
-
-			Map<String, AttributeValue> resultItemMap = result.getItem();
-			if (resultItemMap != null) {
-				credentials = new Credentials();
-				credentials.setId(id);
-				credentials.setPassword(resultItemMap.get("Password").getS());
+		if (memcached != null) {
+			Object cachedObject = memcached.get(id);
+			if (cachedObject != null && cachedObject instanceof Credentials) {
+				credentials = (Credentials) cachedObject;
+				logger.info("Using cached version of credentials");
 			}
+		}
 
-		} catch (AmazonServiceException ase) {
-			logger.warn("Failed to retrieve item in Devices", ase);
-		} catch (Exception e) {
-			logger.error("Exception: ", e);
+		if (credentials == null) {
+			try {
+				Key key = new Key();
+				key.setHashKeyElement(new AttributeValue().withS(id));
+				GetItemRequest getItemRequest = new GetItemRequest()
+						.withTableName("Devices").withKey(key)
+						.withAttributesToGet(Arrays.asList("Id", "Password"));
+
+				GetItemResult result = dbClientProvider.getClient().getItem(
+						getItemRequest);
+
+				Map<String, AttributeValue> resultItemMap = result.getItem();
+				if (resultItemMap != null) {
+					credentials = new Credentials();
+					credentials.setId(id);
+					credentials.setPassword(resultItemMap.get("Password")
+							.getS());
+					if (memcached != null) {
+						logger.info("Caching credentials for id: " + id);
+						memcached.set(id, 3600, credentials);
+					}
+				}
+
+			} catch (AmazonServiceException ase) {
+				logger.warn("Failed to retrieve item in Devices", ase);
+			} catch (Exception e) {
+				logger.error("Exception: ", e);
+			}
 		}
 		return credentials;
 	}
