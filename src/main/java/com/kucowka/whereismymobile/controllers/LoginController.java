@@ -18,8 +18,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.kucowka.whereismymobile.dao.CredentialsDao;
 import com.kucowka.whereismymobile.models.Credentials;
 import com.kucowka.whereismymobile.ui.models.FbLogin;
+import com.kucowka.whereismymobile.ui.models.FbUser;
 import com.kucowka.whereismymobile.ui.models.Login;
+import com.kucowka.whereismymobile.ui.models.User;
 import com.kucowka.whereismymobile.util.HttpClientUtil;
+import com.kucowka.whereismymobile.util.ObjectMapperUtil;
 
 @Controller
 public class LoginController {
@@ -32,6 +35,9 @@ public class LoginController {
 
 	@Autowired
 	private HttpClientUtil httpClientUtil;
+	
+	@Autowired
+	private ObjectMapperUtil fbUserMapperUtil;
 
 	/*
 	 * @Qualifier("memcached.client")
@@ -52,7 +58,7 @@ public class LoginController {
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public String doLogin(@Valid Login login, BindingResult result, Model model) {
+	public String doLogin(@Valid Login login, BindingResult result, Model model, HttpSession session) {
 		logger.info("Email: " + login.getEmail());
 
 		if (!result.hasErrors()) {
@@ -61,6 +67,11 @@ public class LoginController {
 				if (credentials.getPassword() != null
 						&& credentials.getPassword()
 								.equals(login.getPassword())) {
+					User user = new User();
+					user.setEmail(credentials.getEmail());
+					user.setName("unknown");
+					saveUserInSession(session, user);
+					
 					return "redirect:welcome";
 				}
 			}
@@ -99,26 +110,38 @@ public class LoginController {
 	@RequestMapping(value = "/fbLogin")
 	public String fbLogin(FbLogin fbLogin, HttpSession session) {
 		logger.info("Received FB login: " + fbLogin);
+		FbUser fbUser = null;
 		try {
-			getToken("https://graph.facebook.com/oauth/access_token?client_id=374675276002381&redirect_uri=http://ec2-50-16-158-177.compute-1.amazonaws.com:8080/whereismymobile/fbLogin&client_secret=b004fbcaa2bdfe6fa7bc43bd9e563b3e&code="
+			fbUser = getFbUser("https://graph.facebook.com/oauth/access_token?client_id=374675276002381&redirect_uri=http://ec2-50-16-158-177.compute-1.amazonaws.com:8080/whereismymobile/fbLogin&client_secret=b004fbcaa2bdfe6fa7bc43bd9e563b3e&code="
 					+ fbLogin.getCode());
 		} catch (Exception e) {
 			logger.error("Error while getting fb token", e);
 			return "redirect:login";
 		}
+		// TODO set session id as logged and save it in memcached 
+		User user = new User(fbUser);
+		saveUserInSession(session, user);
+		
 		return "redirect:welcome";
 	}
 
-	private void getToken(String address) throws Exception {
+	private void saveUserInSession(HttpSession session, User user) {
+		session.setAttribute("user", user);		
+	}
+
+	private FbUser getFbUser(String address) throws Exception {
 
 		String response = httpClientUtil.getRequest(address);
 		String token = response.substring(
 				response.indexOf(accessToken) + accessToken.length(),
 				response.indexOf(expiresKey));
+		// TODO save session
 		String expires = response.substring(response.indexOf(expiresKey) + expiresKey.length());
 
 		String userDetailsUrl = FbUserDetailsUrl + token;
 		String userDetails = httpClientUtil.getRequest(userDetailsUrl);
 		logger.info("FB User details: " + userDetails);
+		
+		return fbUserMapperUtil.readValue(userDetails, FbUser.class);
 	}
 }

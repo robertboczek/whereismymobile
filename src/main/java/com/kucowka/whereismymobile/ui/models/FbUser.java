@@ -1,6 +1,8 @@
 package com.kucowka.whereismymobile.ui.models;
 
-public class FbUser {
+import java.io.Serializable;
+
+public class FbUser implements Serializable {
 
 	private String id,name,gender,email;
 
