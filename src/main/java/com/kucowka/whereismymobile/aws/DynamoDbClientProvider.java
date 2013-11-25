@@ -20,14 +20,11 @@ public class DynamoDbClientProvider {
 
 	public AmazonDynamoDBClient getClient() throws Exception {
 		if (client == null) {
-			synchronized (this) {
+			synchronized (DynamoDbClientProvider.class) {
 				if (client == null) {
-					InputStream is = this.getClass().getResourceAsStream(
-							"/awsCredentials.properties");
-					logger.error("IS is emtpy?" + (is == null));
+					InputStream is = this.getClass().getResourceAsStream("/awsCredentials.properties");
 					if (is != null) {
 						AWSCredentials credentials = new PropertiesCredentials(is);
-
 						client = new AmazonDynamoDBClient(credentials);
 						client.setEndpoint(endpoint);
 					}
@@ -36,5 +33,4 @@ public class DynamoDbClientProvider {
 		}
 		return client;
 	}
-
 }

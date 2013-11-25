@@ -31,15 +31,13 @@ public class SecurityFilter implements Filter {
 		logger.info("URL: " + url);
 		
 		// check if authenticated if not redirect to loginUrl
-		boolean authenticated = (context + "/welcome").equals(url);
+		boolean authenticated = (context + "/welcome").equals(url) || (context + "/fbLogin").equals(url);
 		if (url.startsWith(openDir) || url.startsWith(loginUrl) || authenticated) {
-			logger.info("Authenticated");
 			filterChain.doFilter(request, response);
 		} else {
 			logger.info("Redirecting to login page");
 			((HttpServletResponse)response).sendRedirect(loginUrl);
 		}
-		
 	}
 
 	public void init(FilterConfig config) throws ServletException {
