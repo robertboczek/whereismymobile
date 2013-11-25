@@ -1,11 +1,8 @@
 package com.kucowka.whereismymobile.controllers;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import net.spy.memcached.MemcachedClient;
@@ -14,7 +11,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,8 +18,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.kucowka.whereismymobile.dao.CredentialsDao;
 import com.kucowka.whereismymobile.models.Credentials;
 import com.kucowka.whereismymobile.ui.models.FbLogin;
-import com.kucowka.whereismymobile.ui.models.FbUser;
 import com.kucowka.whereismymobile.ui.models.Login;
+import com.kucowka.whereismymobile.util.HttpClientUtil;
 
 @Controller
 public class LoginController {
@@ -34,6 +30,9 @@ public class LoginController {
 	@Autowired
 	private CredentialsDao credentialsDao;
 
+	@Autowired
+	private HttpClientUtil httpClientUtil;
+
 	/*
 	 * @Qualifier("memcached.client")
 	 * 
@@ -42,6 +41,9 @@ public class LoginController {
 	private MemcachedClient memcached;
 
 	private static final String errorMessage = "errorMessage";
+	private static final String accessToken = "access_token=";
+	private static final String expiresKey = "&expires=";
+	private static final String FbUserDetailsUrl = "https://graph.facebook.com/me?access_token=";
 
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
 	public String loginPage(Login login, BindingResult result, Model model) {
@@ -95,49 +97,28 @@ public class LoginController {
 	}
 
 	@RequestMapping(value = "/fbLogin")
-	public String fbLogin(FbLogin fbLogin) {
+	public String fbLogin(FbLogin fbLogin, HttpSession session) {
 		logger.info("Received FB login: " + fbLogin);
-
-		if (!StringUtils.isEmpty(fbLogin.getCode())) {
-			try {
-				getToken("https://graph.facebook.com/oauth/access_token?client_id=374675276002381&redirect_uri=http://ec2-50-16-158-177.compute-1.amazonaws.com:8080/whereismymobile/fbLogin&client_secret=b004fbcaa2bdfe6fa7bc43bd9e563b3e&code="
-						+ fbLogin.getCode());
-			} catch (Exception e) {
-				logger.error("Error while getting fb token", e);
-				return "redirect:login";
-			}
+		try {
+			getToken("https://graph.facebook.com/oauth/access_token?client_id=374675276002381&redirect_uri=http://ec2-50-16-158-177.compute-1.amazonaws.com:8080/whereismymobile/fbLogin&client_secret=b004fbcaa2bdfe6fa7bc43bd9e563b3e&code="
+					+ fbLogin.getCode());
+		} catch (Exception e) {
+			logger.error("Error while getting fb token", e);
+			return "redirect:login";
 		}
 		return "redirect:welcome";
 	}
 
 	private void getToken(String address) throws Exception {
-		URL url = new URL(address);
-		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-		conn.setDoOutput(true);
-		conn.setRequestMethod("GET");
-		conn.setRequestProperty("Content-Type", "application/json");
 
-		if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
-			throw new RuntimeException("Failed : HTTP error code : "
-					+ conn.getResponseCode());
-		}
+		String response = httpClientUtil.getRequest(address);
+		String token = response.substring(
+				response.indexOf(accessToken) + accessToken.length(),
+				response.indexOf(expiresKey));
+		String expires = response.substring(response.indexOf(expiresKey) + expiresKey.length());
 
-		BufferedReader br = new BufferedReader(new InputStreamReader(
-				(conn.getInputStream())));
-
-		String output;
-		FbUser fbUser = null;
-		logger.info("Output from Server .... \n");
-		while ((output = br.readLine()) != null) {
-			logger.info("Received output: " + output);
-			String token = output.substring(
-					output.indexOf("access_token=") + 13,
-					output.indexOf("&expires"));
-			String expires = output.substring(output.indexOf("expires=") + 8);
-			logger.info("Token: " + token + ", expires: " + expires);
-		}
-		conn.disconnect();
-		
-		// todo get email from fb
+		String userDetailsUrl = FbUserDetailsUrl + token;
+		String userDetails = httpClientUtil.getRequest(userDetailsUrl);
+		logger.info("FB User details: " + userDetails);
 	}
 }

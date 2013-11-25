@@ -38,6 +38,8 @@ public class SecurityFilter implements Filter {
 			logger.info("Redirecting to login page");
 			((HttpServletResponse)response).sendRedirect(loginUrl);
 		}
+		
+		//((HttpServletRequest) request).getSession().;
 	}
 
 	public void init(FilterConfig config) throws ServletException {
@@ -47,5 +49,4 @@ public class SecurityFilter implements Filter {
 		loginUrl = context + loginUrl;
 		openDir = context + openDir;
 	}
-
 }
