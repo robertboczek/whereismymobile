@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.kucowka.whereismymobile.dao.CredentialsDao;
+import com.kucowka.whereismymobile.filters.SecurityFilter;
 import com.kucowka.whereismymobile.models.Credentials;
 import com.kucowka.whereismymobile.ui.models.FbLogin;
 import com.kucowka.whereismymobile.ui.models.FbUser;
@@ -126,7 +127,7 @@ public class LoginController {
 	}
 
 	private void saveUserInSession(HttpSession session, User user) {
-		session.setAttribute("authorized", true);
+		session.setAttribute(SecurityFilter.AUTHORIZED_KEY, true);
 		session.setAttribute("user", user);		
 	}
 
