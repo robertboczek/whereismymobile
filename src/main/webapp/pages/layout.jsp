@@ -14,8 +14,10 @@
 <script type="text/javascript" src="<c:url value="resources/bootstrap/js/bootstrap.js"/>"></script>
 </head>
 <body>
-    <tiles:insertAttribute name="header" ignore="true" />
-    <tiles:insertAttribute name="body" ignore="true" />
-    <tiles:insertAttribute name="footer" ignore="true" />
+    <div class="layout">
+    	<tiles:insertAttribute name="header" ignore="true" />
+    	<tiles:insertAttribute name="body" ignore="true" />
+    	<tiles:insertAttribute name="footer" ignore="true" />
+    </div>
 </body>
 </html>
