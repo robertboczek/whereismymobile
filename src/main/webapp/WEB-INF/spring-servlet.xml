@@ -47,7 +47,7 @@
 		<property name="basename" value="messages" />
 	</bean>
 	
-	 <!--<bean id="memcached.client" class="net.spy.memcached.spring.MemcachedClientFactoryBean">
+	 <bean id="memcached.client" class="net.spy.memcached.spring.MemcachedClientFactoryBean">
         <property name="servers" value="localhost:11211" />
         <property name="protocol" value="BINARY" />
         <property name="transcoder">
@@ -58,6 +58,6 @@
         <property name="failureMode" value="Cancel" />
         <property name="useNagleAlgorithm" value="false" />
         <property name="timeoutExceptionThreshold" value="20" />
-    </bean>-->
+    </bean>
 
 </beans>
