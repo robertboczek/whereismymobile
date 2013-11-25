@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 public class SecurityFilter implements Filter {
 
 	private static final Logger logger = Logger.getLogger(SecurityFilter.class);
+	public static final String AUTHORIZED_KEY = "authorized";
 	private static String loginUrl;
 	private static String openDir;
 	private String context;
@@ -30,16 +31,16 @@ public class SecurityFilter implements Filter {
 		String url = ((HttpServletRequest) request).getRequestURI().toString();
 		logger.info("URL: " + url);
 		
-		// check if authenticated if not redirect to loginUrl
-		boolean authenticated = (context + "/welcome").equals(url) || (context + "/fbLogin").equals(url);
-		if (url.startsWith(openDir) || url.startsWith(loginUrl) || authenticated) {
+		// check if request is authorized, if not redirect to loginUrl
+		Boolean authorizedValue = (Boolean) ((HttpServletRequest)request).getSession().getAttribute(AUTHORIZED_KEY);
+        boolean authorized = authorizedValue != null && authorizedValue;
+		if (url.startsWith(openDir) || url.startsWith(loginUrl) 
+				|| (context + "/fbLogin").equals(url) || authorized) {
 			filterChain.doFilter(request, response);
 		} else {
 			logger.info("Redirecting to login page");
 			((HttpServletResponse)response).sendRedirect(loginUrl);
 		}
-		
-		//((HttpServletRequest) request).getSession().;
 	}
 
 	public void init(FilterConfig config) throws ServletException {

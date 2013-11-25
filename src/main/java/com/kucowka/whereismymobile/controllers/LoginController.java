@@ -126,6 +126,7 @@ public class LoginController {
 	}
 
 	private void saveUserInSession(HttpSession session, User user) {
+		session.setAttribute("authorized", true);
 		session.setAttribute("user", user);		
 	}
 
