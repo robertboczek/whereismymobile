@@ -68,7 +68,9 @@ public class LoginController {
 								.equals(login.getPassword())) {
 					User user = new User();
 					user.setEmail(credentials.getEmail());
-					user.setName("unknown");
+					if (user.getName() == null) {
+						user.setName("unknown");
+					}
 					saveUserInSession(session, user);
 					
 					return "redirect:welcome";
@@ -97,13 +99,17 @@ public class LoginController {
 			List<Credentials> credentialsList = credentialsDao.getById(email);
 			if (credentialsList.size() == 1) {
 				credentials = credentialsList.get(0);
-				if (memcached != null) {
-					logger.info("Caching credentials for id: " + email);
-					memcached.set(email, 3600, credentials);
-				}
+				cacheCredentials(credentials);
 			}
 		}
 		return credentials;
+	}
+
+	private void cacheCredentials(Credentials credentials) {
+		if (memcached != null) {
+			logger.info("Caching credentials for id: " + credentials.getEmail());
+			memcached.set(credentials.getEmail(), 3600, credentials);
+		}		
 	}
 
 	@RequestMapping(value = "/fbLogin")
@@ -117,7 +123,14 @@ public class LoginController {
 			logger.error("Error while getting fb token", e);
 			return "redirect:login";
 		}
-		// TODO set session id as logged and save it in memcached 
+		// TODO set session id as logged and save it in memcached
+		List<Credentials> credentialsList = credentialsDao.getById(fbUser.getEmail());
+		if (credentialsList.size() == 1) {
+			Credentials credentials = credentialsList.get(0);
+			credentials.setName(fbUser.getName());
+			credentialsDao.save(credentials);
+			cacheCredentials(credentials);
+		}
 		User user = new User(fbUser);
 		saveUserInSession(session, user);
 		

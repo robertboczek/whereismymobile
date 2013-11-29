@@ -1,20 +1,12 @@
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-
-<div class="login well">
-    <table class="loginLabelTable">
+<div class="newUser well">
+    <table class="registerNewUserTable">
     <tr>
       <td>
-        <h2>Log in</h2>
+        <h2>Register new user:</h2>
       </td>
-      <td class="loginWithFb">
-        <a href="http://www.facebook.com/dialog/oauth/?client_id=374675276002381&redirect_uri=http://ec2-50-16-158-177.compute-1.amazonaws.com:8080/whereismymobile/fbLogin&scope=email,read_friendlists&state=RANDOM_NUMBER">
-	  	    <img src="resources/images/fbLogin.png"/>
-	  	</a>
-	  </td>
 	</tr>
 	</table>
-	<form:form action="login" method="POST" modelAttribute="login">
+	<form:form action="signup" method="POST" > <!-- modelAttribute="login" -->
 		<table class="loginFormTable">
 		    <tr>
 				<c:if test="${not empty errorMessage}">
@@ -34,17 +26,15 @@
 				<td><form:errors path="password" cssClass="formError" /></td>
 			</tr>
 			<tr>
+				<td><label for="repeatPassword" class="col-sm-5 control-label">Repeat password</label>
+					<form:input type="password" class="col-xs-6" id="repeatPassword"
+						placeholder="Repeat password" path="password"></form:input></td>
+				<td><form:errors path="repeatPassword" cssClass="formError" /></td>
+			</tr>
+			<tr>
 				<td>
 				    <div class="loginButtonRow">
-				        <div>
-							<button type="submit" class="btn btn-primary">Log in</button> or 
-							<a href="newUser">Sign up</a>
-						</div>
-						<div> 
-							<c:if test="${not empty errorMessage}">
-						  		<a href="forgotPassword">Forgot your password?</a>
-							</c:if>
-						</div>
+						<button type="submit" class="btn btn-primary">Register</button>
 					</div> 
 				</td>
 			</tr>

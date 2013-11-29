@@ -11,7 +11,8 @@
 <link href="<c:url value="resources/bootstrap/css/bootstrap.css"/>" rel="stylesheet">
 <link href="<c:url value="resources/css/custom.css" />" rel="stylesheet">
 
-<script type="text/javascript" src="<c:url value="resources/bootstrap/js/bootstrap.js"/>"></script>
+<script type="text/javascript" src="<c:url value="resources/jquery/jquery.min.js"/>"></script>
+<script type="text/javascript" src="<c:url value="resources/bootstrap/js/bootstrap.min.js"/>"></script>
 </head>
 <body>
     <div class="container">
