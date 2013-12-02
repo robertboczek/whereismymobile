@@ -20,6 +20,7 @@ public class SecurityFilter implements Filter {
 	public static final String AUTHORIZED_KEY = "authorized";
 	private static String loginUrl;
 	private static String openDir;
+	private static String loginRedirectUrl;
 	private String context;
 
 	public void destroy() {
@@ -35,13 +36,14 @@ public class SecurityFilter implements Filter {
 		
 		// /whereismymobile/resources/bootstrap/js/bootstrap.js
 		String url = ((HttpServletRequest) request).getRequestURI().toString();
+		url = url.replaceAll("/{2,}", "/");
 		logger.info("URL: " + url);
 		
 		// check if request is authorized, if not redirect to loginUrl
 		Boolean authorizedValue = (Boolean) (session.getAttribute(AUTHORIZED_KEY));
         boolean authorized = authorizedValue != null && authorizedValue;
 		if (url.startsWith(openDir) || url.startsWith(loginUrl) 
-				|| (context + "/fbLogin").equals(url) || authorized) {
+				|| ("/fbLogin").equals(url) || authorized) {
 			filterChain.doFilter(request, response);
 		} else {
 			logger.info("Redirecting to login page");
