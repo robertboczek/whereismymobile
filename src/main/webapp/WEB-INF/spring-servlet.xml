@@ -61,5 +61,4 @@
         <property name="useNagleAlgorithm" value="false" />
         <property name="timeoutExceptionThreshold" value="20" />
     </bean>
-
 </beans>

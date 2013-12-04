@@ -20,7 +20,6 @@ public class SecurityFilter implements Filter {
 	public static final String AUTHORIZED_KEY = "authorized";
 	private static String loginUrl;
 	private static String openDir;
-	private static String loginRedirectUrl;
 	private String context;
 
 	public void destroy() {
@@ -34,7 +33,7 @@ public class SecurityFilter implements Filter {
 		HttpSession session = ((HttpServletRequest) request).getSession();
 		logger.info("Received sessionId: " + session.getId());
 		
-		// /whereismymobile/resources/bootstrap/js/bootstrap.js
+		// //whereismymobile/resources/bootstrap/js/bootstrap.js
 		String url = ((HttpServletRequest) request).getRequestURI().toString();
 		url = url.replaceAll("/{2,}", "/");
 		logger.info("URL: " + url);

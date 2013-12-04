@@ -33,5 +33,4 @@
         <put-attribute name="title" value="where-is-my-mobile" />
         <put-attribute name="body" value="/pages/forgotPassword.jsp" />
     </definition>
-    
 </tiles-definitions>
