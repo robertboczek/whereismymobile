@@ -140,6 +140,7 @@ public class LoginController {
 	private void saveUserInSession(HttpSession session, User user) {
 		session.setAttribute(SecurityFilter.AUTHORIZED_KEY, true);
 		session.setAttribute("user", user);	
+		logger.info("Saving session");
 	}
 
 	private FbUser getFbUser(String address) throws Exception {

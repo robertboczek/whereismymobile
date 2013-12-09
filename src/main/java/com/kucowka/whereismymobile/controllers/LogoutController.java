@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.kucowka.whereismymobile.filters.SecurityFilter;
 
 @Controller
-public class Logout {
+public class LogoutController {
 
 	@RequestMapping(value="/logout")
 	public String logout(HttpSession session) {

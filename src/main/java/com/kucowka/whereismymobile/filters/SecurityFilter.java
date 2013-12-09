@@ -1,6 +1,7 @@
 package com.kucowka.whereismymobile.filters;
 
 import java.io.IOException;
+import java.util.Enumeration;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -37,6 +38,13 @@ public class SecurityFilter implements Filter {
 		String url = ((HttpServletRequest) request).getRequestURI().toString();
 		url = url.replaceAll("/{2,}", "/");
 		logger.info("URL: " + url);
+		
+		HttpServletRequest httpRequest = ((HttpServletRequest) request);
+		Enumeration e = httpRequest.getHeaderNames();
+		while (e.hasMoreElements()) {
+			String header = (String)e.nextElement();
+			logger.info("header: " + header + " " + httpRequest.getHeader(header));
+		}
 		
 		// check if request is authorized, if not redirect to loginUrl
 		Boolean authorizedValue = (Boolean) (session.getAttribute(AUTHORIZED_KEY));
