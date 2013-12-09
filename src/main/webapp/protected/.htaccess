@@ -1,0 +1,8 @@
+
+<Files "./protected_file.txt">
+AuthType Basic
+AuthName "Only for authorized users"
+AuthUserFile /var/www/resources/protected/.htpasswd
+Require valid-user
+</Files>
+
