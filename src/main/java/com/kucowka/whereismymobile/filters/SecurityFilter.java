@@ -2,6 +2,8 @@ package com.kucowka.whereismymobile.filters;
 
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -20,7 +22,7 @@ public class SecurityFilter implements Filter {
 	private static final Logger logger = Logger.getLogger(SecurityFilter.class);
 	public static final String AUTHORIZED_KEY = "authorized";
 	private static String loginUrl;
-	private static String openDir;
+	private static Set<String> openUrls;
 	private String context;
 
 	public void destroy() {
@@ -39,18 +41,10 @@ public class SecurityFilter implements Filter {
 		url = url.replaceAll("/{2,}", "/");
 		logger.info("URL: " + url);
 		
-		HttpServletRequest httpRequest = ((HttpServletRequest) request);
-		Enumeration e = httpRequest.getHeaderNames();
-		while (e.hasMoreElements()) {
-			String header = (String)e.nextElement();
-			logger.info("header: " + header + " " + httpRequest.getHeader(header));
-		}
-		
 		// check if request is authorized, if not redirect to loginUrl
 		Boolean authorizedValue = (Boolean) (session.getAttribute(AUTHORIZED_KEY));
         boolean authorized = authorizedValue != null && authorizedValue;
-		if (url.startsWith(openDir) || url.startsWith(loginUrl) 
-				|| ("/fbLogin").equals(url) || authorized) {
+		if (authorized || url.startsWith(loginUrl) || isOpen(url)) {
 			filterChain.doFilter(request, response);
 		} else {
 			logger.info("Redirecting to login page");
@@ -58,11 +52,28 @@ public class SecurityFilter implements Filter {
 		}
 	}
 
+	protected boolean isOpen(String url) {
+		boolean isOpen = false;
+		if (openUrls != null) {
+			for (String openUrl : openUrls) {
+				if (url.startsWith(openUrl)) {
+					isOpen = true;
+					break;
+				}
+			}
+		}
+		return isOpen;
+	}
+
 	public void init(FilterConfig config) throws ServletException {
 		loginUrl = config.getInitParameter("loginUrl");
-		openDir = config.getInitParameter("open");
+		openUrls = new HashSet<String>();
+		String openUrlsText = config.getInitParameter("open");
+		String[] tab = openUrlsText.split(",");
 		context = config.getInitParameter("context");
+		for (String openUrl : tab) {
+			openUrls.add(context + openUrl);
+		}
 		loginUrl = context + loginUrl;
-		openDir = context + openDir;
 	}
 }

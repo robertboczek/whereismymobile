@@ -27,7 +27,7 @@ import com.kucowka.whereismymobile.util.HttpClientUtil;
 import com.kucowka.whereismymobile.util.ObjectMapperUtil;
 
 @Controller
-public class LoginController {
+public class LoginController extends AbstractController {
 
 	private static final Logger logger = Logger
 			.getLogger(LoginController.class);
@@ -45,7 +45,6 @@ public class LoginController {
 	@Autowired()
 	private MemcachedClient memcached;
 
-	private static final String errorMessage = "errorMessage";
 	private static final String accessToken = "access_token=";
 	private static final String expiresKey = "&expires=";
 	private static final String FbUserDetailsUrl = "https://graph.facebook.com/me?access_token=";
@@ -61,16 +60,12 @@ public class LoginController {
 		logger.info("Email: " + login.getEmail());
 
 		if (!result.hasErrors()) {
-			Credentials credentials = getCredentials(login.getEmail());
+			List<Credentials> credentialsList = credentialsDao.getById(login.getEmail());
+			Credentials credentials = credentialsList.size() > 0 ? credentialsList.get(0) : null;
 			if (credentials != null) {
 				if (credentials.getPassword() != null
-						&& credentials.getPassword()
-								.equals(login.getPassword())) {
-					User user = new User();
-					user.setEmail(credentials.getEmail());
-					if (user.getName() == null) {
-						user.setName("unknown");
-					}
+						&& credentials.getPassword().equals(login.getPassword())) {
+					User user = new User(credentials);
 					saveUserInSession(session, user);
 					
 					return "redirect:welcome";
@@ -82,34 +77,6 @@ public class LoginController {
 		}
 		model.asMap().put("login", login);
 		return "login";
-	}
-
-	private Credentials getCredentials(String email) {
-		Credentials credentials = null;
-
-		if (memcached != null) {
-			Object cachedObject = memcached.get(email);
-			if (cachedObject != null && cachedObject instanceof Credentials) {
-				credentials = (Credentials) cachedObject;
-				logger.info("Using cached version of credentials");
-			}
-		}
-
-		if (credentials == null) {
-			List<Credentials> credentialsList = credentialsDao.getById(email);
-			if (credentialsList.size() == 1) {
-				credentials = credentialsList.get(0);
-				cacheCredentials(credentials);
-			}
-		}
-		return credentials;
-	}
-
-	private void cacheCredentials(Credentials credentials) {
-		if (memcached != null) {
-			logger.info("Caching credentials for id: " + credentials.getEmail());
-			memcached.set(credentials.getEmail(), 3600, credentials);
-		}		
 	}
 
 	@RequestMapping(value = "/fbLogin")
@@ -125,22 +92,35 @@ public class LoginController {
 		}
 		// TODO set session id as logged and save it in memcached
 		List<Credentials> credentialsList = credentialsDao.getById(fbUser.getEmail());
+		Credentials credentials = null;
+		boolean shouldSave = false;
 		if (credentialsList.size() == 1) {
-			Credentials credentials = credentialsList.get(0);
-			credentials.setName(fbUser.getName());
-			credentialsDao.save(credentials);
-			cacheCredentials(credentials);
+			credentials = credentialsList.get(0);
+			shouldSave = setFields(credentials, fbUser);
+		} else {
+			credentials = new Credentials();
+			credentials.setEmail(fbUser.getEmail());
+			shouldSave = setFields(credentials, fbUser);
 		}
-		User user = new User(fbUser);
+		if (shouldSave) {
+			credentialsDao.save(credentials);
+		}
+		User user = new User(credentials);
 		saveUserInSession(session, user);
 		
 		return "redirect:welcome";
 	}
 
-	private void saveUserInSession(HttpSession session, User user) {
-		session.setAttribute(SecurityFilter.AUTHORIZED_KEY, true);
-		session.setAttribute("user", user);	
-		logger.info("Saving session");
+	private boolean setFields(Credentials credentials, FbUser fbUser) {
+		if (!fbUser.getFirst_name().equals(credentials.getFirstName()) ||
+				!fbUser.getLast_name().equals(credentials.getLastName())) {
+			credentials.setFirstName(fbUser.getFirst_name());
+			credentials.setLastName(fbUser.getLast_name());
+			credentials.setImgSrc("http://graph.facebook.com/" + fbUser.getId() + "/picture");
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	private FbUser getFbUser(String address) throws Exception {

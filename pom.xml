@@ -141,12 +141,32 @@
 			<artifactId>spymemcached-provider</artifactId>
 			<version>3.2.0</version>
 		</dependency>
+		
+		<!-- Javaee API -->
+		<!-- <dependency>
+    		<groupId>javax</groupId>
+    		<artifactId>javaee-api</artifactId>
+    		<version>6.0</version>
+		</dependency>-->
+		
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.4</version>
+		</dependency>
 
 		<!-- junit -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
+			<version>4.7</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<version>1.8.4</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

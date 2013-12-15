@@ -37,12 +37,10 @@
 				<td>
 				    <div class="loginButtonRow">
 				        <div>
-							<button type="submit" class="btn btn-primary">Log in</button> or 
-							<a href="newUser">Sign up</a>
-						</div>
-						<div> 
+							<button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-arrow-right"></span> Log in</button> or 
+							<a href="signup">Sign up</a>
 							<c:if test="${not empty errorMessage}">
-						  		<a href="forgotPassword">Forgot your password?</a>
+						  		<a href="resetPassword">Forgot your password?</a>
 							</c:if>
 						</div>
 					</div> 

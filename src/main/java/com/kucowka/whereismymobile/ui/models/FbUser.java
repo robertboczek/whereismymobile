@@ -4,15 +4,7 @@ import java.io.Serializable;
 
 public class FbUser implements Serializable {
 
-	private String id,name,gender,email;
-
-	public String getGender() {
-		return gender;
-	}
-
-	public void setGender(String gender) {
-		this.gender = gender;
-	}
+	private String id, first_name, last_name, email;
 
 	public String getId() {
 		return id;
@@ -22,14 +14,6 @@ public class FbUser implements Serializable {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public String getEmail() {
 		return email;
 	}
@@ -37,5 +21,20 @@ public class FbUser implements Serializable {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	
+
+	public String getFirst_name() {
+		return first_name;
+	}
+
+	public void setFirst_name(String first_name) {
+		this.first_name = first_name;
+	}
+
+	public String getLast_name() {
+		return last_name;
+	}
+
+	public void setLast_name(String last_name) {
+		this.last_name = last_name;
+	}
 }

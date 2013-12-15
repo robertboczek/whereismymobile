@@ -17,7 +17,7 @@ body {
 }
 
 .login .loginButtonRow {
-  margin-left: 30%;
+  margin-left: 20%;
   margin-top: 5%;
 }
 
@@ -27,12 +27,52 @@ body {
   width: 70%;
 }
 
+.newUser {
+  margin-top: 10%;
+  margin-left: auto;
+  margin-right: auto;
+  width: 70%;
+}
+
+.newUser .newUserFormTable {
+  margin-left: auto;
+  margin-right: auto;
+  width: 70%;
+}
+
+.newUser .newUserButtonsRow {
+  margin-left: 30%;
+  margin-top: 5%;
+}
+
+.restPassword {
+  margin-top: 10%;
+  margin-left: auto;
+  margin-right: auto;
+  width: 70%;
+}
+
+.restPassword .restPasswordFormTable {
+  margin-left: auto;
+  margin-right: auto;
+  width: 70%;
+}
+
+.restPassword .restPasswordButtonsRow {
+  margin-left: 30%;
+  margin-top: 5%;
+}
+
 .login .loginWithFb {
   text-align: right;
 }
 
-.login .formError {
+.formError {
   color: #C09853;
+}
+
+.required {
+  margin-left: 25%;
 }
 
 #header .userDetails {

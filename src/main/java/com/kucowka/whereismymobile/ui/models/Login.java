@@ -9,12 +9,10 @@ import com.kucowka.whereismymobile.validation.annotations.RequiredPasswordFormat
 
 public class Login {
 
-	@NotNull
 	@Length(min=8)
 	@Email
 	private String email;
 	
-	@NotNull
 	@Length(min=8)
 	@RequiredPasswordFormat
 	private String password;
