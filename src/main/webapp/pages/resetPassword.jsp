@@ -9,7 +9,7 @@
       </td>
 	</tr>
 	</table>
-	<form:form action="signup" method="post" modelAttribute="resetPassword">
+	<form:form action="resetPassword" method="post" modelAttribute="resetPassword">
 		<table class="resetPasswordFormTable">
 		    <tr>
 				<c:if test="${not empty errorMessage}">

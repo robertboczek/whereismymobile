@@ -45,20 +45,20 @@ body {
   margin-top: 5%;
 }
 
-.restPassword {
+.resetPassword {
   margin-top: 10%;
   margin-left: auto;
   margin-right: auto;
   width: 70%;
 }
 
-.restPassword .restPasswordFormTable {
+.resetPassword .resetPasswordFormTable {
   margin-left: auto;
   margin-right: auto;
   width: 70%;
 }
 
-.restPassword .restPasswordButtonsRow {
+.resetPassword .resetPasswordButtonsRow {
   margin-left: 30%;
   margin-top: 5%;
 }
