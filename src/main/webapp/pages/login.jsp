@@ -1,7 +1,12 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
-<div class="login well">
+
+<div class="login">
+	<div class="logo">
+    	<img src="resources/images/logo.png" />
+	</div>
+	<div class="well">
     <table class="loginLabelTable">
     <tr>
       <td>
@@ -49,4 +54,5 @@
 			<tr></tr>
 		</table>
 	</form:form>
+	</div>
 </div>

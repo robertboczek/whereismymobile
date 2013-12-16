@@ -78,7 +78,7 @@
 				<td colspan="2">
 				    <div class="resetPasswordButtonsRow">
 						<button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-wrench"></span> Reset</button>
-						<a href="login"><button type="button" class="btn">Login page</button></a>
+						<a href="login"><button type="button" class="btn">Log in</button></a>
 					</div> 
 				</td>
 			</tr>
