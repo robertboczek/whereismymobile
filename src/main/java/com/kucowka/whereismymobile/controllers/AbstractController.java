@@ -12,6 +12,8 @@ public abstract class AbstractController {
 	private static final Logger logger = Logger.getLogger(AbstractController.class);
 	
 	protected static final String errorMessage = "errorMessage";
+	
+	protected static final String infoMessage = "infoMessage";
 
 	protected void saveUserInSession(HttpSession session, User user) {
 		session.setAttribute(SecurityFilter.AUTHORIZED_KEY, true);

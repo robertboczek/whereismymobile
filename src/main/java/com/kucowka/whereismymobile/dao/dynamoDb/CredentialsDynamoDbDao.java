@@ -1,7 +1,6 @@
 package com.kucowka.whereismymobile.dao.dynamoDb;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import net.spy.memcached.MemcachedClient;
@@ -9,12 +8,12 @@ import net.spy.memcached.MemcachedClient;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import com.kucowka.whereismymobile.dao.CredentialsDao;
 import com.kucowka.whereismymobile.models.Credentials;
 
-@Component
+@Repository
 public class CredentialsDynamoDbDao extends GenericDynamoDbDao<String, Credentials> 
 	implements CredentialsDao {
 	

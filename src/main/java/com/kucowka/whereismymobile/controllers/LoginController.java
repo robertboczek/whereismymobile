@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -90,7 +91,7 @@ public class LoginController extends AbstractController {
 			logger.error("Error while getting fb token", e);
 			return "redirect:login";
 		}
-		// TODO set session id as logged and save it in memcached
+
 		List<Credentials> credentialsList = credentialsDao.getById(fbUser.getEmail());
 		Credentials credentials = null;
 		boolean shouldSave = false;
@@ -113,7 +114,8 @@ public class LoginController extends AbstractController {
 
 	private boolean setFields(Credentials credentials, FbUser fbUser) {
 		if (!fbUser.getFirst_name().equals(credentials.getFirstName()) ||
-				!fbUser.getLast_name().equals(credentials.getLastName())) {
+				!fbUser.getLast_name().equals(credentials.getLastName()) ||
+				StringUtils.isEmpty(credentials.getImgSrc())) {
 			credentials.setFirstName(fbUser.getFirst_name());
 			credentials.setLastName(fbUser.getLast_name());
 			credentials.setImgSrc("http://graph.facebook.com/" + fbUser.getId() + "/picture");

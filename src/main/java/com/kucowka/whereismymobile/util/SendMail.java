@@ -63,9 +63,10 @@ public class SendMail {
 		});
 	}
 
-	public void sendMail(MailMessage mailMessage) {
+	public boolean sendMail(MailMessage mailMessage) {
 
 		Message message = new MimeMessage(session);
+		logger.info("Sending message: " + mailMessage);
 		try {
 			message.setFrom(new InternetAddress(mailMessage.getFrom()));
 
@@ -73,10 +74,13 @@ public class SendMail {
 					InternetAddress.parse(mailMessage.getTo()));
 			message.setSubject(mailMessage.getSubject());
 			message.setText(mailMessage.getBody());
+			message.setContent(mailMessage.getBody(), "text/html; charset=UTF-8");
 
 			Transport.send(message);
 		} catch (MessagingException e) {
 			logger.error("Exception while sending mail message: " + mailMessage, e);
+			return false;
 		}
+		return true;
 	}
 }
