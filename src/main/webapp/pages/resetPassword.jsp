@@ -75,10 +75,10 @@
 				<td></td>
 			</tr>
 			<tr>
-				<td>
+				<td colspan="2">
 				    <div class="resetPasswordButtonsRow">
-						<button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-wrench"></span> Reset</button> or 
-						<a href="login">Login page</a>
+						<button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-wrench"></span> Reset</button>
+						<a href="login"><button type="button" class="btn">Login page</button></a>
 					</div> 
 				</td>
 			</tr>

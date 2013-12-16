@@ -34,14 +34,14 @@
 				<td><form:errors path="password" cssClass="formError" /></td>
 			</tr>
 			<tr>
-				<td>
+				<td colspan="2">
 				    <div class="loginButtonRow">
 				        <div>
-							<button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-arrow-right"></span> Log in</button> or 
-							<a href="signup">Sign up</a>
+							<button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-arrow-right"></span> Log in</button> 
 							<c:if test="${not empty errorMessage}">
-						  		<a href="resetPassword">Forgot your password?</a>
+						  		<a href="resetPassword"><button type="button" class="btn">Forgot your password?</button></a>
 							</c:if>
+							<a href="signup"><button type="button" class="btn">Sign up</button></a>
 						</div>
 					</div> 
 				</td>

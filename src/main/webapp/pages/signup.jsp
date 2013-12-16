@@ -51,10 +51,10 @@
 				<td></td>
 			</tr>
 			<tr>
-				<td>
+				<td colspan="2">
 				    <div class="newUserButtonsRow">
 						<button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk"></span> Create</button> or 
-						<a href="login">Login page</a>
+						<a href="login"><button type="button" class="btn">Login page</button></a>
 					</div> 
 				</td>
 			</tr>
