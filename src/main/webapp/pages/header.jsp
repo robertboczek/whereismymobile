@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
+<nav class="navbar navbar-default" role="navigation">
 <div id="header">
     <div class="dropdown userDetails">
         Welcome: 
@@ -16,5 +17,5 @@
 			</li>
   		</ul>
     </div>
-  
 </div>
+</nav>
