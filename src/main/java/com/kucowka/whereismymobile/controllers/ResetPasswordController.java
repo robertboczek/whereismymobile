@@ -7,6 +7,7 @@ import java.util.UUID;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,6 +27,8 @@ import com.kucowka.whereismymobile.util.models.MailMessage;
 
 @Controller
 public class ResetPasswordController extends AbstractController {
+	
+	private static final Logger logger = Logger.getLogger(ResetPasswordController.class);
 
 	@Autowired
 	private TimeBoundFeaturesDao timeBoundFeaturesDao;
@@ -46,7 +49,8 @@ public class ResetPasswordController extends AbstractController {
 			List<TimeBoundFeatures> list = timeBoundFeaturesDao.getById(resetPassword.getCode());
 			if (list.size() == 1) {
 				TimeBoundFeatures timeBoundFeatures = list.get(0);
-				if (new Date().getTime() > timeBoundFeatures.getExpireTime()) {
+				logger.info(timeBoundFeatures);
+				if (isExpired(timeBoundFeatures)) {
 					model.asMap().put(errorMessage, "Reset link has expired. Please repeat the reset procedure.");
 					resetPassword.setCode(null);
 				} else {
@@ -82,7 +86,7 @@ public class ResetPasswordController extends AbstractController {
 					TimeBoundFeatures t = new TimeBoundFeatures();
 					t.setId(UUID.randomUUID().toString().replace("-", ""));
 					t.setExpireTime(dateTimeUtil.getDate(1).getTime()); // valid for
-																	// a day
+					t.setValid(true);												// a day
 					t.setFeatureContent(resetPassword.getAccountId());
 					timeBoundFeaturesDao.save(t);
 
@@ -104,7 +108,7 @@ public class ResetPasswordController extends AbstractController {
 					TimeBoundFeatures timeBoundFeatures = null;
 					if (list.size() == 1) {
 						timeBoundFeatures = list.get(0);
-						if (new Date().getTime() > timeBoundFeatures.getExpireTime()) {
+						if (isExpired(timeBoundFeatures)) {
 							model.asMap().put(errorMessage, "Reset link has expired. Please repeat the reset procedure.");
 							resetPassword.setCode(null);
 						} else {
@@ -118,8 +122,9 @@ public class ResetPasswordController extends AbstractController {
 								} else {
 									credentials.setPassword(resetPassword.getPassword());
 									credentialsDao.save(credentials);
-									// todo either remove or invalidate
-									timeBoundFeaturesDao.remove(timeBoundFeatures);
+									// invalidate
+									timeBoundFeatures.setValid(false);
+									timeBoundFeaturesDao.save(timeBoundFeatures);
 									resetResult = true;
 								}
 							}
@@ -134,6 +139,11 @@ public class ResetPasswordController extends AbstractController {
 		model.asMap().put(errorMessage, error);
 		model.asMap().put("resetPassword", resetPassword);
 		return "resetPassword";
+	}
+
+	protected boolean isExpired(TimeBoundFeatures timeBoundFeatures) {
+		return new Date().getTime() > timeBoundFeatures.getExpireTime() 
+				|| !timeBoundFeatures.isValid();
 	}
 
 	protected boolean sendMessage(TimeBoundFeatures t) {

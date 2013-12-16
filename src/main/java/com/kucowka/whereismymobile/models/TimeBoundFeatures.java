@@ -14,6 +14,8 @@ public class TimeBoundFeatures extends Entity {
 	private TimeBoundFeaturesType featureType;
 	
 	private String featureContent;
+	
+	private boolean valid;
 
 	@DynamoDBHashKey(attributeName="Id")
 	public String getId() {
@@ -49,5 +51,21 @@ public class TimeBoundFeatures extends Entity {
 
 	public void setFeatureContent(String featureContent) {
 		this.featureContent = featureContent;
+	}
+
+	@DynamoDBAttribute
+	public boolean isValid() {
+		return valid;
+	}
+
+	public void setValid(boolean valid) {
+		this.valid = valid;
+	}
+
+	@Override
+	public String toString() {
+		return "TimeBoundFeatures [id=" + id + ", expireTime=" + expireTime
+				+ ", featureType=" + featureType + ", featureContent="
+				+ featureContent + ", valid=" + valid + "]";
 	}
 }
