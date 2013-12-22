@@ -46,9 +46,11 @@ public class CaptchaController {
 	}
 	
 	@RequestMapping(value = "/refreshCaptcha", method = RequestMethod.POST)
-	public void refreshCatcha(HttpSession session) {
+	public @ResponseBody String refreshCatcha(HttpSession session) {
 		logger.info("Refreshing captcha");
 		createNewCaptchaText(session);
+		
+		return "";
 	}
 
 	private String createNewCaptchaText(HttpSession session) {

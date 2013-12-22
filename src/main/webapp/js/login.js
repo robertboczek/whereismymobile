@@ -12,7 +12,7 @@ $(function() {
             type: 'POST',  
             async: false,
             success: function(){
-            	$("#captcha").attr("src","captcha.png");
+            	$("#captcha").attr("src","captcha.png" + '?' + Math.random());
             }
 		});
 	});
