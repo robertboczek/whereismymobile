@@ -1,6 +1,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
+<script type="text/javascript" src="<c:url value="resources/js/login.js"/>"></script>
 
 <div class="login">
 	<div class="logo">
@@ -37,6 +38,16 @@
 					<form:input type="password" class="col-xs-6" id="password"
 						placeholder="Password" path="password"></form:input></td>
 				<td><form:errors path="password" cssClass="formError" /></td>
+			</tr>
+			<tr>
+				<td>
+					<label class="col-sm-5 control-label">
+				    	<img id="captcha" src="captcha.png" />
+				    	<span id="reload" class="glyphicon glyphicon-refresh"></span>
+				    </label>
+					<form:input type="text" class="col-xs-6" id="captchaCode"
+						placeholder="Text in the image" path="captchaCode"></form:input>
+				</td>
 			</tr>
 			<tr>
 				<td colspan="2">

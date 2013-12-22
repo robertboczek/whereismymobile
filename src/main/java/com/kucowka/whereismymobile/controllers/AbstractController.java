@@ -17,7 +17,8 @@ public abstract class AbstractController {
 
 	protected void saveUserInSession(HttpSession session, User user) {
 		session.setAttribute(SecurityFilter.AUTHORIZED_KEY, true);
-		session.setAttribute("user", user);	
+		session.setAttribute("user", user);
+		session.setAttribute(CaptchaController.CAPTCHA_SESSION_KEY, null);
 		logger.info("Saving session");
 	}
 }

@@ -17,6 +17,8 @@ public class Login {
 	@RequiredPasswordFormat
 	private String password;
 	
+	private String captchaCode;
+	
 	public String getEmail() {
 		return email;
 	}
@@ -31,5 +33,13 @@ public class Login {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getCaptchaCode() {
+		return captchaCode;
+	}
+
+	public void setCaptchaCode(String captchaCode) {
+		this.captchaCode = captchaCode;
 	}
 }

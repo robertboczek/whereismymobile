@@ -60,21 +60,28 @@ public class LoginController extends AbstractController {
 	public String doLogin(@Valid Login login, BindingResult result, Model model, HttpSession session) {
 		logger.info("Email: " + login.getEmail());
 
-		if (!result.hasErrors()) {
-			List<Credentials> credentialsList = credentialsDao.getById(login.getEmail());
-			Credentials credentials = credentialsList.size() > 0 ? credentialsList.get(0) : null;
-			if (credentials != null) {
-				if (credentials.getPassword() != null
-						&& credentials.getPassword().equals(login.getPassword())) {
-					User user = new User(credentials);
-					saveUserInSession(session, user);
-					
-					return "redirect:welcome";
-				}
-			}
-			model.asMap().put(errorMessage, "Email or password was invalid");
+		boolean validCaptchaCode = true;
+		Object captchaObject = session.getAttribute(CaptchaController.CAPTCHA_SESSION_KEY);
+		if (login.getCaptchaCode() == null || !login.getCaptchaCode().equals(captchaObject)) {
+			model.asMap().put(errorMessage, "Invalid code from the image");
+			validCaptchaCode = false;
 		} else {
-			model.asMap().put(errorMessage, "Please fix the errors and retry!");
+			if (validCaptchaCode && !result.hasErrors()) {
+				List<Credentials> credentialsList = credentialsDao.getById(login.getEmail());
+				Credentials credentials = credentialsList.size() > 0 ? credentialsList.get(0) : null;
+				if (credentials != null) {
+					if (credentials.getPassword() != null
+							&& credentials.getPassword().equals(login.getPassword())) {
+						User user = new User(credentials);
+						saveUserInSession(session, user);
+					
+						return "redirect:welcome";
+					}
+				}
+				model.asMap().put(errorMessage, "Email or password was invalid");
+			} else {
+				model.asMap().put(errorMessage, "Please fix the errors and retry!");
+			}
 		}
 		model.asMap().put("login", login);
 		return "login";

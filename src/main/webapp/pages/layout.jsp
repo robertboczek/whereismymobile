@@ -12,6 +12,8 @@
 
 <script type="text/javascript" src="<c:url value="resources/jquery/jquery.min.js"/>"></script>
 <script type="text/javascript" src="<c:url value="resources/bootstrap/js/bootstrap.min.js"/>"></script>
+<script type="text/javascript">
+</script>
 </head>
 <body>
     <div class="layout">

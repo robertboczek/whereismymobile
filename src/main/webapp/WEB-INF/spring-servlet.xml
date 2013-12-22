@@ -32,7 +32,11 @@
 	
 	<bean id="deviceResolver" class="org.springframework.mobile.device.LiteDeviceResolver" />
 
-	<mvc:annotation-driven />
+	<mvc:annotation-driven>
+		<mvc:message-converters register-defaults="true">
+    		<bean class="org.springframework.http.converter.BufferedImageHttpMessageConverter"/>
+  		</mvc:message-converters>
+	</mvc:annotation-driven>
 	
 	<mvc:resources mapping="/resources/bootstrap/**"
 		location="/bootstrap/" cache-period="10000" />
